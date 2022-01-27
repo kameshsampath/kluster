@@ -18,8 +18,8 @@ package commands
 
 import (
 	"fmt"
-	"github.com/kameshsampath/go-kluster/pkg/model"
-	"github.com/kameshsampath/go-kluster/pkg/utils"
+	"github.com/kameshsampath/kluster/pkg/model"
+	"github.com/kameshsampath/kluster/pkg/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"

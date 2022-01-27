@@ -18,7 +18,7 @@ package commands
 
 import (
 	"fmt"
-	"github.com/kameshsampath/go-kluster/pkg/utils"
+	"github.com/kameshsampath/kluster/pkg/utils"
 	"os"
 	"path"
 	"testing"

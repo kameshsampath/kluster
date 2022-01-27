@@ -1,4 +1,4 @@
-module github.com/kameshsampath/go-kluster
+module github.com/kameshsampath/kluster
 
 go 1.17
 

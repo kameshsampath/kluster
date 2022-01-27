@@ -15,10 +15,10 @@ builds:
     flags:
       - -mod=vendor
     ldflags:
-      - -X github.com/kameshsampath/kluster/pkg/commands.Version={{.Version}}
-      - -X github.com/kameshsampath/kluster/pkg/commands.BuildDate={{.Date}}
-      - -X github.com/kameshsampath/kluster/pkg/commands.Commit={{.Commit}}
-      - -X github.com/kameshsampath/kluster/pkg/commands.BuiltBy=goreleaser
+      - '-X github.com/kameshsampath/kluster/pkg/commands.Version={{.Version}}'
+      - '-X github.com/kameshsampath/kluster/pkg/commands.BuildDate={{.Date}}'
+      - '-X github.com/kameshsampath/kluster/pkg/commands.Commit={{.Commit}}'
+      - '-X github.com/kameshsampath/kluster/pkg/commands.BuiltBy=goreleaser'
 archives:
   - replacements:
       darwin: Darwin

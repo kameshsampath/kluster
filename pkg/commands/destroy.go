@@ -18,7 +18,7 @@ package commands
 
 import (
 	"fmt"
-	utils "github.com/kameshsampath/go-kluster/pkg/utils"
+	utils "github.com/kameshsampath/kluster/pkg/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

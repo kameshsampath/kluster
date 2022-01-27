@@ -19,7 +19,7 @@ package utils
 import (
 	"github.com/elliotchance/orderedmap"
 	"github.com/google/go-cmp/cmp"
-	"github.com/kameshsampath/go-kluster/pkg/model"
+	"github.com/kameshsampath/kluster/pkg/model"
 	"os"
 	"path"
 	"reflect"

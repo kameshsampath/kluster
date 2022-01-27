@@ -17,7 +17,7 @@ limitations under the License.
 package utils
 
 import (
-	"github.com/kameshsampath/go-kluster/pkg/model"
+	"github.com/kameshsampath/kluster/pkg/model"
 	log "github.com/sirupsen/logrus"
 )
 

@@ -19,7 +19,7 @@ package utils
 import (
 	"bytes"
 	"fmt"
-	"github.com/kameshsampath/go-kluster/pkg/model"
+	"github.com/kameshsampath/kluster/pkg/model"
 	"github.com/mikefarah/yq/v4/pkg/yqlib"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/op/go-logging.v1"

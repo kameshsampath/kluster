@@ -17,7 +17,7 @@ limitations under the License.
 package main
 
 import (
-	"github.com/kameshsampath/go-kluster/pkg/commands"
+	"github.com/kameshsampath/kluster/pkg/commands"
 	log "github.com/sirupsen/logrus"
 	"os"
 )
