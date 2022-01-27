@@ -1,6 +1,6 @@
 # Kluster
 
-Kluster is a small tool used to build and run [k3s](https://k3s.io) clusters. The tool leverages [multipass](https://multipass.run) for creating a Virtual Machine to host and run the k3s cluster.
+Kluster is a tool used to build and run [k3s](https://k3s.io) clusters. The tool leverages [multipass](https://multipass.run) for creating a Virtual Machine to host and run the k3s cluster.
 
 __NOTE__: The tool is under early stages of development and lots of changes underway. 
 
