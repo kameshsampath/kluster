@@ -1,0 +1,19 @@
+{
+  "list": [
+    {
+      "ipv4": [
+      ],
+      "name": "cluster1",
+      "release": "20.04 LTS",
+      "state": "Stopped"
+    },
+    {
+      "ipv4": [
+        "192.168.64.92"
+      ],
+      "name": "vm1",
+      "release": "20.04 LTS",
+      "state": "Running"
+    }
+  ]
+}

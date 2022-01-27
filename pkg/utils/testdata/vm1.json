@@ -1,0 +1,32 @@
+{
+  "errors": [
+  ],
+  "info": {
+    "vm1": {
+      "disks": {
+        "sda1": {
+          "total": "20629221376",
+          "used": "1944403968"
+        }
+      },
+      "image_hash": "9885804a77e0d7572787ba89e1f3998bdbe45005cb5c51d391d3c6647fdeedb0",
+      "image_release": "20.04 LTS",
+      "ipv4": [
+        "192.168.64.92"
+      ],
+      "load": [
+        0,
+        0,
+        0
+      ],
+      "memory": {
+        "total": 4122849280,
+        "used": 150953984
+      },
+      "mounts": {
+      },
+      "release": "Ubuntu 20.04.3 LTS",
+      "state": "Running"
+    }
+  }
+}

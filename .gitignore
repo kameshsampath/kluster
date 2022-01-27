@@ -1,0 +1,24 @@
+*.out
+*.log
+bin
+
+# Test binary, build with `go test -c`
+*.test
+
+# kluster binary itself, if you want to `go build cmd/main` in the top dir.
+/kluster
+/kluster-*
+
+# IntelliJ IDE specific
+.idea
+
+# VSCode specific
+.vscode
+
+# Operating system temporary files
+.DS_Store
+dist/
+
+coverage.txt
+.envrc.local
+!removeconfig.orig

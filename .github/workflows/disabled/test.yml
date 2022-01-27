@@ -1,0 +1,41 @@
+name: Test and Coverage
+
+on: [ push, pull_request ]
+
+env:
+  GOPROXY: https://proxy.golang.org
+  GO_VERSION: '1.17.6'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Download Dependencies
+        run: go mod download
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Install libvirt
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvirt-dev  libvirt-daemon-system
+      - name: Install multipass
+        run: |
+          sudo snap install multipass --channel=edge
+          sudo snap connect multipass:libvirt
+          sudo multipass set local.driver=libvirt
+      - name: Run Test
+        run: |
+          export TMPDIR="$RUNNER_TEMP"
+          export TMPDIR="$RUNNER_TEMP"
+          export KLUSTER_WITH_SUDO="true"
+          make test
+        continue-on-error: false
+
+      - name: Upload coverage to Codecov
+        run: bash <(curl -s https://codecov.io/bash)
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
