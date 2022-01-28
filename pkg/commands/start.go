@@ -61,7 +61,7 @@ func (opts *StartOptions) Execute(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 	var k *model.Kluster
-	if k = klusterList.HasKluster(opts.profile); k == nil {
+	if k = klusterList.GetKluster(opts.profile); k == nil {
 		out, err := opts.startKluster()
 		if err != nil {
 			log.Errorf("Error creating kluster %s, \n%s\n%s", opts.profile, err, utils.ToString(out))

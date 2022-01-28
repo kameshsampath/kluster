@@ -16,7 +16,10 @@
 
 package utils
 
-import "fmt"
+import (
+	"os"
+	"path"
+)
 
 const (
 	yqClustersCountExpr       = ".clusters|length"
@@ -27,28 +30,13 @@ const (
 	yqUsersNameExpr           = ".users.[].name"
 	yqExtensionsCountExpr     = ".extensions|length"
 	yqPrefExtensionsCountExpr = ".preferences.extensions|length"
-	mergeExpr                 = "select(fileIndex == 0) *+ select(fileIndex == 1)"
-	defaultKubeConfigFileName = "config"
 )
 
-var kubeIPNameReplaceExpr = `(.clusters.[].cluster.server | select(. == "https://127.0.0.1:6443")) = "https://%s:6443" | 
-(.clusters.[].name | select(. == "default")) = "%[2]s" |
-(.contexts.[].name | select(. == "default")) = "%[2]s" | 
-(.contexts.[].context.cluster | select(. == "default")) = "%[2]s" | 
-(.contexts.[].context.user | select(. == "default")) = "%[2]s" | 
-(.users.[].name | select(. == "default")) = "%[2]s"`
+var defaultKubeConfigFileName = path.Join(os.Getenv("HOME"), ".kube", "config")
 
 //GHRelease struct to hold the GH release info like tag and release type
 type GHRelease struct {
 	TagName    string `json:"tag_name"`
 	Draft      bool   `json:"draft,omitempty"`
 	PreRelease bool   `json:"prerelease,omitempty"`
-}
-
-func deleteKubeContextExpressionForKluster(klusterName string) string {
-	return fmt.Sprintf(`del(.clusters.[] | select(.name == "%[1]s")) | 
-del(.users.[] | select(.name == "%[1]s"))  | del(.contexts.[] |
-select(.name == "%[1]s"))| del(.extensions.[] | select(.name == "%[1]s")) | 
-del(.preferences.extensions.[] | select(.name == "%[1]s")) | .current-context |= ""
-`, klusterName)
 }

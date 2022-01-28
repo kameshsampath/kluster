@@ -74,7 +74,7 @@ func (opts *DestroyOptions) destroyKluster() ([]string, error) {
 		log.Errorf("Error getting Klusters %v", err)
 		return nil, err
 	}
-	if klusterList.HasKluster(opts.profile) != nil {
+	if klusterList.GetKluster(opts.profile) != nil {
 		deleteArgs := []string{"delete",
 			opts.profile,
 			"--purge",
