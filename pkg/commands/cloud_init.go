@@ -14,7 +14,7 @@ package commands
 
 import (
 	"fmt"
-	"github.com/kameshsampath/go-kluster/pkg/utils"
+	"github.com/kameshsampath/kluster/pkg/utils"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"

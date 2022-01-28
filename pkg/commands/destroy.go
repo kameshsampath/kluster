@@ -18,7 +18,7 @@ package commands
 
 import (
 	"fmt"
-	utils "github.com/kameshsampath/go-kluster/pkg/utils"
+	utils "github.com/kameshsampath/kluster/pkg/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -74,7 +74,7 @@ func (opts *DestroyOptions) destroyKluster() ([]string, error) {
 		log.Errorf("Error getting Klusters %v", err)
 		return nil, err
 	}
-	if klusterList.HasKluster(opts.profile) != nil {
+	if klusterList.GetKluster(opts.profile) != nil {
 		deleteArgs := []string{"delete",
 			opts.profile,
 			"--purge",

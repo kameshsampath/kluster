@@ -18,7 +18,7 @@ package commands
 
 import (
 	"fmt"
-	utils "github.com/kameshsampath/go-kluster/pkg/utils"
+	utils "github.com/kameshsampath/kluster/pkg/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -50,13 +50,13 @@ func (opts *KubeConfigOptions) Execute(cmd *cobra.Command, args []string) error 
 		log.Fatalf("Error getting Klusters %v", err)
 		return err
 	}
-	if klusterList.HasKluster(opts.profile) != nil {
+	if k := klusterList.GetKluster(opts.profile); k != nil {
 		kcutil, err := utils.NewKubeConfigUtil(opts.kubeConfigFile)
 		if err != nil {
 			log.Fatalf("Error building KubeConfigUtil %v while trying to write kubeconfig for kluster %s", err, opts.profile)
 			return err
 		}
-		if err := kcutil.WriteKubeConfig(opts.profile, nil); err != nil {
+		if err := kcutil.WriteKubeConfig(opts.profile, k); err != nil {
 			return err
 		}
 	}

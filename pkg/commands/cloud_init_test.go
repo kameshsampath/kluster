@@ -15,7 +15,7 @@ package commands
 import (
 	"fmt"
 	"github.com/google/go-cmp/cmp"
-	"github.com/kameshsampath/go-kluster/pkg/utils"
+	"github.com/kameshsampath/kluster/pkg/utils"
 	"os"
 	"path"
 	"strings"

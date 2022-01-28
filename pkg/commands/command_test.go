@@ -17,8 +17,9 @@
 package commands
 
 import (
+	"crypto/md5" //#nosec
 	"fmt"
-	"github.com/kameshsampath/go-kluster/pkg/utils"
+	"github.com/kameshsampath/kluster/pkg/utils"
 	"os"
 	"path"
 	"testing"
@@ -138,11 +139,84 @@ func TestDestroyKluster(t *testing.T) {
 			} else {
 				k, _ := utils.Klusters()
 				if k != nil {
-					if k.HasKluster(tc.destroyOptions.profile) != nil {
+					if k.GetKluster(tc.destroyOptions.profile) != nil {
 						t.Error("Error expecting Kluster not to exist but it does")
 					}
 				}
 			}
 		})
+	}
+	deleteOpts := DestroyOptions{
+		profile: startOpts.profile,
+	}
+	if _, err := deleteOpts.destroyKluster(); err != nil {
+		t.Logf("Unable to cleanup the kluster %s. Delete it manually", startOpts.profile)
+	}
+}
+
+func TestKubeConfig(t *testing.T) {
+	startOpts := StartOptions{
+		profile:        "demo4",
+		memory:         "4G",
+		cpus:           2,
+		diskSize:       "20G",
+		withKubeConfig: false,
+	}
+
+	if _, err := startOpts.startKluster(); err != nil {
+		t.Fatalf("Error %v", err)
+	}
+
+	kubeconfigTestCases := map[string]struct {
+		kubeConfigOptions KubeConfigOptions
+		kubeConfigFile    string
+		want              string
+	}{
+		"defaults": {
+			kubeConfigOptions: KubeConfigOptions{
+				profile: "demo4",
+			},
+			want:           "b18e75feb4997840fca96effd51ba023",
+			kubeConfigFile: path.Join(cwd, "testdata", "config.out"),
+		},
+		"customPath": {
+			kubeConfigOptions: KubeConfigOptions{
+				profile:        "demo4",
+				kubeConfigFile: path.Join(cwd, "testdata", "custom.out"),
+			},
+			want:           "b18e75feb4997840fca96effd51ba023",
+			kubeConfigFile: path.Join(cwd, "testdata", "custom.out"),
+		},
+	}
+
+	for name, tc := range kubeconfigTestCases {
+		t.Run(name, func(t *testing.T) {
+			_ = os.Setenv("KUBECONFIG", tc.kubeConfigFile)
+			rootCmd := NewRootCommand()
+			if tc.kubeConfigOptions.kubeConfigFile != "" {
+				rootCmd.SetArgs([]string{"kubeconfig", "--profile", tc.kubeConfigOptions.profile, "--to-file", tc.kubeConfigOptions.kubeConfigFile, "-v", "debug"})
+			} else {
+				rootCmd.SetArgs([]string{"kubeconfig", "--profile", tc.kubeConfigOptions.profile, "-v", "debug"})
+			}
+
+			if err := rootCmd.Execute(); err != nil {
+				b, err := os.ReadFile(tc.kubeConfigFile)
+				if err != nil {
+					t.Fatalf("Error %v", err)
+				}
+				actual := fmt.Sprintf("%x", md5.Sum(b)) //#nosec
+				if tc.want != actual {
+					t.Errorf("Expecting checksum to be %s but got %s", tc.want, actual)
+				}
+			}
+		})
+	}
+	os.Remove(path.Join(cwd, "testdata", "config.out"))
+	os.Remove(path.Join(cwd, "testdata", "custom.out"))
+	deleteOpts := DestroyOptions{
+		profile: startOpts.profile,
+	}
+	if _, err := deleteOpts.destroyKluster(); err != nil {
+		t.Logf("Unable to cleanup the kluster %s. Delete it manually", startOpts.profile)
 	}
 }

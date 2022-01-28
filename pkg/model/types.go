@@ -108,8 +108,8 @@ func (k Kluster) IP() string {
 	return ""
 }
 
-//HasKluster checks if the list has the kluster by name klusterName
-func (kl *KlusterList) HasKluster(klusterName string) *Kluster {
+//GetKluster checks if the list has the kluster by name klusterName
+func (kl *KlusterList) GetKluster(klusterName string) *Kluster {
 	for _, e := range kl.Klusters {
 		if e.Name == klusterName {
 			return &e

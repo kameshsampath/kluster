@@ -4,7 +4,7 @@ SHELL := /bin/bash
 all:	clean build
 
 build:
-	goreleaser build --snapshot --rm-dist --single-target
+	goreleaser build --snapshot --rm-dist --single-target --debug
 
 test:
 	./hack/test.sh

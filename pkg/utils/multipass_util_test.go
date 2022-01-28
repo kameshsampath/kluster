@@ -13,7 +13,7 @@ package utils
 
 import (
 	"github.com/google/go-cmp/cmp"
-	"github.com/kameshsampath/go-kluster/pkg/model"
+	"github.com/kameshsampath/kluster/pkg/model"
 	"io/ioutil"
 	"os"
 	"path"

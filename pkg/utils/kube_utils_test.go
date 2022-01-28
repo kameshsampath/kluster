@@ -17,9 +17,11 @@
 package utils
 
 import (
+	"bytes"
 	"github.com/elliotchance/orderedmap"
 	"github.com/google/go-cmp/cmp"
-	"github.com/kameshsampath/go-kluster/pkg/model"
+	"github.com/kameshsampath/kluster/pkg/model"
+	"github.com/mikefarah/yq/v4/pkg/yqlib"
 	"os"
 	"path"
 	"reflect"
@@ -80,12 +82,13 @@ func TestUpdateKubeServerNameAndIP(t *testing.T) {
 	if err := WriteLinesToFile(path.Join(cwd, "testdata", "config3.out"), strings.Split(string(b), "\n")); err != nil {
 		t.Fatalf("Error %v", err)
 	}
-	err = kcutil.updateKubeClusterNameAndIP(k)
+
+	err = kcutil.mergeConfigs(k, b)
 	if err != nil {
 		os.Remove(path.Join(cwd, "testdata", "config3.out"))
 		t.Fatalf("Error %v", err)
 	}
-	clusterNames, err := Evaluate(path.Join(cwd, "testdata", "config3.out"), yqClustersNameExpr)
+	clusterNames, err := evaluate(path.Join(cwd, "testdata", "config3.out"), yqClustersNameExpr)
 
 	if err != nil || len(clusterNames) == 0 {
 		os.Remove(path.Join(cwd, "testdata", "config3.out"))
@@ -96,7 +99,7 @@ func TestUpdateKubeServerNameAndIP(t *testing.T) {
 		t.Errorf("Diff want-got \n%s", cmp.Diff(want.clusterNames, clusterNames))
 	}
 
-	kuberServerIPs, err := Evaluate(path.Join(cwd, "testdata", "config3.out"), ".clusters.[] | .cluster.server")
+	kuberServerIPs, err := evaluate(path.Join(cwd, "testdata", "config3.out"), ".clusters.[] | .cluster.server")
 
 	if err != nil || len(kuberServerIPs) == 0 {
 		os.Remove(path.Join(cwd, "testdata", "config3.out"))
@@ -172,9 +175,10 @@ func TestMergeKubeConfig(t *testing.T) {
 			if kcutil, err := NewKubeConfigUtil(tc.kubeconfig); err != nil {
 				t.Errorf("Error: %v", err)
 			} else {
-				if newKubeConfigFileContents, err := ReadFile(tc.kubeConfigFile); err != nil {
+				b, err := os.ReadFile(tc.kubeConfigFile)
+				if err != nil {
 					t.Errorf("Error: %#v", err)
-				} else if err := kcutil.mergeConfigs(tc.kluster, newKubeConfigFileContents); err != nil {
+				} else if err := kcutil.mergeConfigs(tc.kluster, b); err != nil {
 					t.Errorf("Error: %#v", err)
 				} else {
 					tc.asserts(t)
@@ -230,25 +234,25 @@ func TestRemoveContextFromKubeConfig(t *testing.T) {
 }
 
 func (tc kubeUtilsTestCase) asserts(t *testing.T) {
-	actuals, err := Evaluate(tc.kubeconfig, yqClustersCountExpr)
+	actuals, err := evaluate(tc.kubeconfig, yqClustersCountExpr)
 	assertCounts(t, "clusters", tc.clustersCount, actuals, err)
-	actuals, err = Evaluate(tc.kubeconfig, yqClustersNameExpr)
+	actuals, err = evaluate(tc.kubeconfig, yqClustersNameExpr)
 	assertNames(t, "clusters", tc.clusterNames, actuals, err)
 
-	actuals, err = Evaluate(tc.kubeconfig, yqContextsCountExpr)
+	actuals, err = evaluate(tc.kubeconfig, yqContextsCountExpr)
 	assertCounts(t, "contexts", tc.contextsCount, actuals, err)
-	actuals, err = Evaluate(tc.kubeconfig, yqContextsNameExpr)
+	actuals, err = evaluate(tc.kubeconfig, yqContextsNameExpr)
 	assertNames(t, "contexts", tc.contextNames, actuals, err)
 
-	actuals, err = Evaluate(tc.kubeconfig, yqUsersCountExpr)
+	actuals, err = evaluate(tc.kubeconfig, yqUsersCountExpr)
 	assertCounts(t, "users", tc.usersCount, actuals, err)
-	actuals, err = Evaluate(tc.kubeconfig, yqUsersNameExpr)
+	actuals, err = evaluate(tc.kubeconfig, yqUsersNameExpr)
 	assertNames(t, "users", tc.userNames, actuals, err)
 
-	actuals, err = Evaluate(tc.kubeconfig, yqExtensionsCountExpr)
+	actuals, err = evaluate(tc.kubeconfig, yqExtensionsCountExpr)
 	assertCounts(t, "extensions", tc.extensionsCount, actuals, err)
 
-	actuals, err = Evaluate(tc.kubeconfig, yqPrefExtensionsCountExpr)
+	actuals, err = evaluate(tc.kubeconfig, yqPrefExtensionsCountExpr)
 	assertCounts(t, "preferences.extensions", tc.prefExtensionsCount, actuals, err)
 }
 
@@ -272,4 +276,15 @@ func assertNames(t *testing.T, name string, expected, actuals []string, err erro
 	if !reflect.DeepEqual(expected, actuals) {
 		t.Errorf("Expected number of %s is %#v but got %#v  ", name, expected, actuals)
 	}
+}
+
+func evaluate(kubeConfigFile, expr string) ([]string, error) {
+	buf := new(bytes.Buffer)
+	printer := yqlib.NewPrinterWithSingleWriter(buf, yqlib.YamlOutputFormat,
+		true, false, 2, false)
+	if err := yqlib.NewStreamEvaluator().EvaluateFiles(expr,
+		[]string{kubeConfigFile}, printer, false); err != nil {
+		return []string{}, err
+	}
+	return strings.Fields(buf.String()), nil
 }
