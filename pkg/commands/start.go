@@ -64,25 +64,27 @@ func (opts *StartOptions) Execute(cmd *cobra.Command, _ []string) error {
 	if k = klusterList.HasKluster(opts.profile); k == nil {
 		out, err := opts.startKluster()
 		if err != nil {
-			log.Fatalf("Error creating kluster %s, %s", opts.profile, err)
+			log.Errorf("Error creating kluster %s, \n%s\n%s", opts.profile, err, utils.ToString(out))
 			fmt.Fprintf(cmd.ErrOrStderr(), "Error creating kluster %s, %s", opts.profile, err)
 			return err
 		}
-		log.Infof("Kluster %s sucessfully created %s", opts.profile, utils.ToString(out))
+		log.Infof("Kluster %s sucessfully created", opts.profile)
 		defer os.RemoveAll(opts.cloudInitFile)
 	}
 	log.Infof("Kluster %s already exsits", opts.profile)
 	if opts.withKubeConfig {
-		if kcutil, err := utils.NewKubeConfigUtil(""); err != nil {
+		if kcu, err := utils.NewKubeConfigUtil(""); err != nil {
 			log.Warnf("Error building KubeConfigUtil %v while trying to write kubeconfig for kluster %s", err, opts.profile)
 		} else {
-			kd, err := utils.KlusterDetails(k.Name)
+			kd, err := utils.KlusterDetails(opts.profile)
 			if err != nil {
 				fmt.Fprintf(cmd.ErrOrStderr(), "Error getting details for kluster %s", opts.profile)
 			}
-
-			k.IPAddresses = kd.Info.IPAddresses
-			if err = kcutil.WriteKubeConfig(opts.profile, k); err != nil {
+			k = &model.Kluster{
+				Name:        opts.profile,
+				IPAddresses: kd.Info.IPAddresses,
+			}
+			if err = kcu.WriteKubeConfig(k.Name, k); err != nil {
 				fmt.Fprintf(cmd.ErrOrStderr(), "Error writing kubeconfig for kluster %s", opts.profile)
 			}
 		}
@@ -115,7 +117,6 @@ func (opts *StartOptions) startKluster() ([]string, error) {
 			return nil, err
 		}
 	} else {
-		defer os.RemoveAll(opts.cloudInitFile)
 		return er.StdOutErrLines, nil
 	}
 	return nil, nil

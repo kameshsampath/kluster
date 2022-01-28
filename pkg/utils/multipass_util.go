@@ -44,9 +44,9 @@ func KlusterDetails(klusterName string) (*model.KlusterDetails, error) {
 		log.Errorf("Error getting kluster %s details %s", klusterName, er.StdErr.String())
 		return nil, err
 	}
-	var klusterDetails model.KlusterDetails
-	if err := klusterDetails.MachineInfoToKlusterDetails(er.StdOut.Bytes()); err != nil {
+	var kd model.KlusterDetails
+	if err := kd.MachineInfoToKlusterDetails(er.StdOut.Bytes()); err != nil {
 		return nil, err
 	}
-	return &klusterDetails, nil
+	return &kd, nil
 }
